@@ -11,5 +11,6 @@
     * Константный реверсивный;
 * Copy/Move Constructors;
 * Copy/Move Assignments;
+* Добавил в конструктор std::initializer_list
 
 P.S.: Постарался выполнить все дополнительные задачи.
