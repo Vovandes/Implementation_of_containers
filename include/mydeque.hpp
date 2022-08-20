@@ -50,8 +50,8 @@ namespace mtd {
 		};
 		iterator begin() { return iterator(head_); }
 		iterator end() { return iterator(tail_->pNext); }
-		iterator begin() const { return iterator(head_); }
-		iterator end() const { return iterator(tail_->pNext); }
+		const iterator begin() const { return iterator(head_); }
+		const iterator end() const { return iterator(tail_->pNext); }
 		//-------------------------------------------------------------------------------------------------
 		// Class Reverse_Iterator:
 		class reverse_iterator {
@@ -188,9 +188,9 @@ namespace mtd {
 		deque<Q>& operator = (deque<Q>&& rhs) noexcept;
 		//-------------------------------------------------------------------------------------------------
 		// Add
-		void push_back(const Q value);
-		void push_front(const Q value);
-		void insert(std::size_t index, const Q value);
+		void push_back(const Q& value);
+		void push_front(const Q& value);
+		void insert(std::size_t index, const Q& value);
 		//-------------------------------------------------------------------------------------------------
 		// Sub
 		void pop_front();
@@ -198,8 +198,8 @@ namespace mtd {
 		void erase(std::size_t index);
 		void clear();
 		//-------------------------------------------------------------------------------------------------
-		Q& at(std::size_t index);
 		const Q& at(std::size_t index) const;
+		Q& at(std::size_t index);
 		//void PrintDeque();
 		//-------------------------------------------------------------------------------------------------
 		std::size_t size() const { return size_; }
@@ -228,14 +228,14 @@ namespace mtd {
 	};
 	//-------------------------------------------------------------------------------------------------
 	// Constructors:
-	// #1 +
+	// #1
 	template <typename Q>
 	inline deque<Q>::deque()
 		:head_{ nullptr }
 		, tail_{ nullptr }
 		, size_{ 0 } {}
 	//-------------------------------------------------------------------------------------------------
-	// #2 +
+	// #2
 	template <typename Q>
 	inline deque<Q>::deque(const Q value)
 		: head_{ new Node<Q>{value} }
@@ -243,7 +243,7 @@ namespace mtd {
 		, size_{ 1 }
 	{ }
 	//-------------------------------------------------------------------------------------------------
-	// #3 +
+	// #3
 	template <typename Q>
 	inline deque<Q>::deque(const std::initializer_list<Q> l)
 		: deque()
@@ -309,7 +309,7 @@ namespace mtd {
 	//-------------------------------------------------------------------------------------------------
 	// Method push_back:
 	template <typename Q>
-	inline void deque<Q>::push_back(const Q value) {
+	inline void deque<Q>::push_back(const Q& value) {
 		if (empty()) {
 			head_ = new Node<Q>{ value };
 			tail_ = head_;
@@ -327,7 +327,7 @@ namespace mtd {
 	//-------------------------------------------------------------------------------------------------
 	// Method push_front:
 	template <typename Q>
-	inline void deque<Q>::push_front(const Q value) {
+	inline void deque<Q>::push_front(const Q& value) {
 		if (empty()) {
 			head_ = new Node<Q>{ value };
 			tail_ = head_;
@@ -344,7 +344,7 @@ namespace mtd {
 	//-------------------------------------------------------------------------------------------------
 	// Method insert:
 	template <typename Q>
-	inline void deque<Q>::insert(std::size_t index, const Q value) {
+	inline void deque<Q>::insert(std::size_t index, const Q& value) {
 		if (if_index_large_size(index)) {
 			std::cout << "Error! Incorrect Index!" << std::endl;
 			return;
@@ -473,39 +473,33 @@ namespace mtd {
 	// Function bool if index larger than size return true
 	template <typename Q>
 	inline bool deque<Q>::if_index_large_size(const std::size_t index) const {
-		return index > size_;
+		return index >= size_;
 	}
 	//-------------------------------------------------------------------------------------------------
 	// Functions at() with check index
+	template<typename Q>
+	inline const Q& deque<Q>::at(std::size_t index) const {
+		try {
+			if (if_index_large_size(index)) {
+				throw std::runtime_error("error(1): going beyond the array limit. return first element");
+			}
+			if (empty()) {
+				throw "error(2): container is empty. exit(1)";
+			}
+			return this->operator[](index);
+		}
+		catch (const std::exception& ex) {
+			std::cerr << "main(exception): " << ex.what() << ": ";
+			return head_->data;
+		}
+		catch (const char* msg) {
+			std::cerr << "main(exception): " << msg << std::endl;
+			std::exit(1);
+		}
+	}
 	template <typename Q>
 	inline Q& deque<Q>::at(std::size_t index) {
 		return const_cast<Q&>(static_cast<const deque<Q>&>(*this).at(index));
-	}
-	template<typename Q>
-	inline const Q& deque<Q>::at(std::size_t index) const {
-		if (empty()) {
-			std::cout << "Error! Container is empty!" << std::endl;
-			std::exit(1);
-		}
-		else if (if_index_large_size(index)) {
-			std::cout << "Error! Incorrect Index! Return first element" << std::endl;
-			return head_->data;
-		}
-		else if (index > size_ / 2) {
-			index = size_ - 1 - index;
-			Node<Q>* new_current = tail_;
-			while (index--) {
-				new_current = new_current->pPrev;
-			}
-			return new_current->data;
-		}
-		else {
-			Node<Q>* new_current = head_;
-			while (index--) {
-				new_current = new_current->pNext;
-			}
-			return new_current->data;
-		}
 	}
 	//-------------------------------------------------------------------------------------------------
 	// Overload operator []() const:

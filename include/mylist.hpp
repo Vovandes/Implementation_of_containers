@@ -11,7 +11,7 @@ namespace mtd {
 		class Node;
 	public:
 		//-------------------------------------------------------------------------------------------------
-				// Class Iterator:
+		// Class Iterator:
 		class iterator {
 		public:
 			iterator(Node<Q>* elem = nullptr) : elem_{ elem } {}
@@ -41,10 +41,10 @@ namespace mtd {
 		};
 		iterator begin() { return iterator(head_); }
 		iterator end() { return iterator(nullptr); }
-		iterator begin() const { return iterator(head_); }
-		iterator end() const { return iterator(nullptr); }
+		const iterator begin() const { return iterator(head_); }
+		const iterator end() const { return iterator(nullptr); }
 		//-------------------------------------------------------------------------------------------------
-				// Class Const_Iterator:
+		// Class Const_Iterator:
 		class const_iterator {
 		public:
 			const_iterator(Node<Q>* elem = nullptr) : elem_{ elem } {}
@@ -89,18 +89,20 @@ namespace mtd {
 
 		~list();
 		//-------------------------------------------------------------------------------------------------
-				// Add
-		void push_back(const Q value);
-		void push_front(const Q value);
-		void insert(const std::size_t index, const Q value);
+		// Add
+		void push_back(const Q& value);
+		void push_front(const Q& value);
+		void insert(const std::size_t index, const Q& value);
 		//-------------------------------------------------------------------------------------------------
-				// Sub
+		// Sub
 		void pop_front();
 		void pop_back();
 		void erase(const std::size_t index);
 		void clear();
 
+		const Q& at(const std::size_t index) const;
 		Q& at(const std::size_t index);
+
 		std::size_t size() const { return size_; }
 		bool empty() const { return !size_; }
 
@@ -118,13 +120,13 @@ namespace mtd {
 		};
 		//-------------------------------------------------------------------------------------------------
 
-		bool if_index_large_size(const std::size_t index);
+		bool if_index_large_size(const std::size_t index) const;
 
 		std::size_t size_;
 		Node<Q>* head_;
 	};
 	//-------------------------------------------------------------------------------------------------
-		// Constructors:
+	// Constructors:
 	template <typename Q>
 	inline list<Q>::list()
 		:head_{ nullptr }
@@ -144,7 +146,7 @@ namespace mtd {
 		}
 	};
 	//-------------------------------------------------------------------------------------------------
-		// Copy Constructor:
+	// Copy Constructor:
 	template <typename Q>
 	inline list<Q>::list(const list& rhs)
 		: list()
@@ -156,7 +158,7 @@ namespace mtd {
 		}
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Move Constructor:
+	// Move Constructor:
 	template <typename Q>
 	inline list<Q>::list(list&& rhs) noexcept
 		: head_{ rhs.head_ }
@@ -165,7 +167,7 @@ namespace mtd {
 		rhs.head_ = nullptr;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Copy Assignment:
+	// Copy Assignment:
 	template<typename Q>
 	inline list<Q>& list<Q>::operator=(const list<Q>& rhs) {
 		clear();
@@ -177,7 +179,7 @@ namespace mtd {
 		return *this;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Move Assignment:
+	// Move Assignment:
 	template<typename Q>
 	inline list<Q>& list<Q>::operator=(list<Q>&& rhs) noexcept {
 		size_ = std::move(rhs.size_);
@@ -186,7 +188,7 @@ namespace mtd {
 		return *this;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Destructor:
+	// Destructor:
 	template <typename Q>
 	inline list<Q>::~list() {
 		if (head_) {
@@ -194,9 +196,9 @@ namespace mtd {
 		}
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Method push_back:
+	// Method push_back:
 	template <typename Q>
-	inline void list<Q>::push_back(const Q value) {
+	inline void list<Q>::push_back(const Q& value) {
 		if (!head_) {
 			head_ = new Node<Q>{ value };
 		}
@@ -211,16 +213,16 @@ namespace mtd {
 		++size_;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Method push_front:
+	// Method push_front:
 	template <typename Q>
-	inline void list<Q>::push_front(const Q value) {
+	inline void list<Q>::push_front(const Q& value) {
 		head_ = new Node<Q>{ value, head_ };
 		++size_;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Method insert:
+	// Method insert:
 	template <typename Q>
-	inline void list<Q>::insert(const std::size_t index, const Q value) {
+	inline void list<Q>::insert(const std::size_t index, const Q& value) {
 		if (if_index_large_size(index)) {
 			std::cout << "Error! Incorrect Index!" << std::endl;
 			return;
@@ -240,7 +242,7 @@ namespace mtd {
 		}
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Method pop_front:
+	// Method pop_front:
 	template <typename Q>
 	inline void list<Q>::pop_front() {
 		if (empty()) {
@@ -253,7 +255,7 @@ namespace mtd {
 		--size_;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Method pop_back:
+	// Method pop_back:
 	template <typename Q>
 	inline void list<Q>::pop_back() {
 		if (empty()) {
@@ -264,7 +266,7 @@ namespace mtd {
 		}
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Method erase:
+	// Method erase:
 	template <typename Q>
 	inline void list<Q>::erase(const std::size_t index) {
 		if (empty()) {
@@ -294,7 +296,7 @@ namespace mtd {
 		}
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Method clear:
+	// Method clear:
 	template <typename Q>
 	inline void list<Q>::clear() {
 		if (!empty()) {
@@ -304,39 +306,39 @@ namespace mtd {
 		}
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Function bool if index larger than size return true
+	// Function bool if index larger than size return true
 	template <typename Q>
-	inline bool list<Q>::if_index_large_size(const std::size_t index) {
-		return index > size_;
+	inline bool list<Q>::if_index_large_size(const std::size_t index) const {
+		return index >= size_;
 	}
-	//-------------------------------------------------------------------------------------------------
-		// Functions at() with check index
-	template <typename Q>
-	inline Q& list<Q>::at(const std::size_t index) {
-		if (if_index_large_size(index)) {
-			std::cout << "Error! Incorrect Index! Return 0 element" << std::endl;
-			if (head_) {
-				return head_->data;
+	template<typename Q>
+	inline const Q& list<Q>::at(const std::size_t index) const {
+		try {
+			if (if_index_large_size(index)) {
+				throw std::runtime_error("error(1): going beyond the array limit. return first element");
 			}
-			else {
-				std::exit(1);
+			if (empty()) {
+				throw "error(2): container is empty. exit(1)";
 			}
+			return this->operator[](index);
 		}
-		else {
-			Node<Q>* new_current = head_;
-			std::size_t count{ 0 };
-			while (!new_current) {
-				if (count == index) {
-					return new_current->data;
-				}
-				new_current = new_current->pNext;
-				++count;
-			}
+		catch (const std::exception& ex) {
+			std::cerr << "main(exception): " << ex.what() << ": ";
 			return head_->data;
 		}
+		catch (const char* msg) {
+			std::cerr << "main(exception): " << msg << std::endl;
+			std::exit(1);
+		}
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Overload operator []() const:
+	// Functions at() with check index
+	template <typename Q>
+	inline Q& list<Q>::at(const std::size_t index) {
+		return const_cast<Q&>(static_cast<const list<Q>&>(*this).at(index));
+	}
+	//-------------------------------------------------------------------------------------------------
+	// Overload operator []() const:
 	template <typename Q>
 	inline const Q& list<Q>::operator[](const std::size_t index) const {
 		Node<Q>* new_current = head_;
@@ -348,10 +350,10 @@ namespace mtd {
 			new_current = new_current->pNext;
 			++count;
 		}
-		std::exit(1);
+		return head_->data;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Overload operator []():
+	// Overload operator []():
 	template <typename Q>
 	inline Q& list<Q>::operator[](const std::size_t index) {
 		return const_cast<Q&>(static_cast<const list<Q>&>(*this)[index]);

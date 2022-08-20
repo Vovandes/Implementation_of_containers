@@ -8,21 +8,34 @@ namespace mtd {
 	template <typename Q>
 	class vector {
 	public:
-		//-------------------------------------------------------------------------------------------------
-				// Class Iterator:
+		//-------------------------------------------------------------------------------------------------		
+		// Class Iterator:
 		class iterator {
 		public:
 			iterator(Q* elem) : elem_{ elem } {}
 			iterator(const iterator& it) : iterator{ it.elem_ } {}
 			~iterator() = default;
 
-			Q operator +(std::size_t ind) { return *(elem_ + ind); }
-			Q operator -(std::size_t ind) { return *(elem_ - ind); }
-
-			Q& operator ++(int ind) { return *elem_++; }
-			Q& operator --(int ind) { return *elem_--; }
-			Q& operator ++() { return *++elem_; }
-			Q& operator --() { return *--elem_; }
+			iterator operator +(std::size_t ind) { return elem_ + ind; }
+			iterator operator -(std::size_t ind) { return elem_ - ind; }
+			iterator& operator ++(int) {
+				auto tmp = elem_;
+				++elem_;
+				return *tmp;
+			}
+			iterator& operator --(int) {
+				auto tmp = elem_;
+				--elem_;
+				return *tmp;
+			}
+			iterator& operator ++() {
+				++elem_;
+				return *this;
+			}
+			iterator& operator --() {
+				--elem_;
+				return *this;
+			}
 
 			bool operator ==(const iterator& iter) const { return elem_ == iter.elem_; }
 			bool operator !=(const iterator& iter) const { return !(elem_ == iter.elem_); }
@@ -33,23 +46,36 @@ namespace mtd {
 		};
 		iterator begin() { return iterator(data_); }
 		iterator end() { return iterator(data_ + size_); }
-		iterator begin() const { return iterator(data_); }
-		iterator end() const { return iterator(data_ + size_); }
+		const iterator begin() const { return iterator(data_); }
+		const iterator end() const { return iterator(data_ + size_); }
 		//-------------------------------------------------------------------------------------------------
-				// Class Const_Iterator:
+		// Class Const_Iterator:
 		class const_iterator {
 		public:
 			const_iterator(Q* elem) : elem_{ elem } {}
 			const_iterator(const const_iterator& it) : const_iterator{ it.elem_ } {}
 			~const_iterator() = default;
 
-			Q operator +(std::size_t ind) { return *(elem_ + ind); }
-			Q operator -(std::size_t ind) { return *(elem_ - ind); }
-
-			Q& operator ++(int ind) { return *elem_++; }
-			Q& operator --(int ind) { return *elem_--; }
-			Q& operator ++() { return *++elem_; }
-			Q& operator --() { return *--elem_; }
+			const_iterator operator +(std::size_t ind) { return elem_ + ind; }
+			const_iterator operator -(std::size_t ind) { return elem_ - ind; }
+			const_iterator& operator ++(int) {
+				auto tmp = elem_;
+				++elem_;
+				return *tmp;
+			}
+			const_iterator& operator --(int) {
+				auto tmp = elem_;
+				--elem_;
+				return *tmp;
+			}
+			const_iterator& operator ++() {
+				++elem_;
+				return *this;
+			}
+			const_iterator& operator --() {
+				--elem_;
+				return *this;
+			}
 
 			bool operator ==(const const_iterator& iter) const { return elem_ == iter.elem_; }
 			bool operator !=(const const_iterator& iter) const { return !(elem_ == iter.elem_); }
@@ -61,35 +87,35 @@ namespace mtd {
 		const_iterator cbegin() const { return const_iterator(data_); }
 		const_iterator cend() const { return const_iterator(data_ + size_); }
 		//-------------------------------------------------------------------------------------------------
-				// Конструкторы:
+		// Constructors:
 		vector();
 		vector(std::initializer_list<Q> l);
-		// Деструктор:
+		// Destructor:
 		~vector();
-		// Конструктор копирования:
+		// Copy Constructor:
 		vector(const vector& rhs);
-		// Конструктор перемещения:
+		// Move Constructor:
 		vector(vector&& rhs) noexcept;
 		//-------------------------------------------------------------------------------------------------
-				// Copy Assignment:
+		// Copy Assignment:
 		vector<Q>& operator = (const vector<Q>& rhs);
 		// Move Assignment:
 		vector<Q>& operator = (vector<Q>&& rhs) noexcept;
 		//-------------------------------------------------------------------------------------------------
-				// Перегрузка оператора *()
+		// Overload operator *()
 		Q& operator *() const { return *data_; }
 
-		// Перегрузка оператора []()
-		Q& operator[](std::size_t index) const;
+		// Overload operator []()
+		const Q& operator[](std::size_t index) const;
 		Q& operator[](std::size_t index);
 		//-------------------------------------------------------------------------------------------------
-				// Functions with check Out of array
-		Q& at(std::size_t index) const;
+		// Functions with check Out of array
+		const Q& at(std::size_t index) const;
 		Q& at(std::size_t index);
 		//-------------------------------------------------------------------------------------------------
-		void push_back(const Q value);
-		void push_front(const Q value);
-		void insert(const std::size_t index, const Q value);
+		void push_back(const Q& value);
+		void push_front(const Q& value);
+		void insert(const std::size_t index, const Q& value);
 		void erase(const std::size_t index);
 		void clear();
 		//-------------------------------------------------------------------------------------------------
@@ -110,7 +136,7 @@ namespace mtd {
 		void swap(vector<Q>& rhs) noexcept;
 	};
 	//-------------------------------------------------------------------------------------------------
-		// Constructors:
+	// Constructors:
 	template <typename Q>
 	inline vector<Q>::vector()
 		: size_{ 0 }
@@ -124,13 +150,13 @@ namespace mtd {
 		}
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Destructor:
+	// Destructor:
 	template <typename Q>
 	inline vector<Q>::~vector() {
 		clear();
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Copy Constructor:
+	// Copy Constructor:
 	template <typename Q>
 	inline vector<Q>::vector(const vector& rhs) : vector() {
 		if (this != &rhs) {
@@ -142,7 +168,7 @@ namespace mtd {
 		}
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Move Constructor:
+	// Move Constructor:
 	template <typename Q>
 	inline vector<Q>::vector(vector&& rhs) noexcept
 		:size_{ rhs.size_ }
@@ -151,7 +177,7 @@ namespace mtd {
 		rhs.data_ = nullptr;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Copy Assignment:
+	// Copy Assignment:
 	template <typename Q>
 	inline vector<Q>& vector<Q>::operator=(const vector<Q>& rhs) {
 		if (this == &rhs) {
@@ -163,7 +189,7 @@ namespace mtd {
 		return *this;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Move Assignment:
+	// Move Assignment:
 	template <typename Q>
 	inline vector<Q>& vector<Q>::operator=(vector<Q>&& rhs) noexcept {
 		swap(rhs);
@@ -171,41 +197,48 @@ namespace mtd {
 		return *this;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Overload operator []() const:
+	// Overload operator []() const:
 	template <typename Q>
-	inline Q& vector<Q>::operator[](std::size_t index) const {
+	inline const Q& vector<Q>::operator[](std::size_t index) const {
 		return data_[index];
 	}
-
 	// Overload operator []():
 	template <typename Q>
 	inline Q& vector<Q>::operator[](std::size_t index) {
 		return const_cast<Q&>(static_cast<const vector<Q>&>(*this)[index]);
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Functions with check Out of array at() for const objects:
+	// Functions with check Out of array at() for const objects:
 	template <typename Q>
-	inline Q& vector<Q>::at(std::size_t index) const {
-		if (out_of_array(index)) {
-			std::cout << "Error! Out of array! Return [0] element!" << std::endl;
+	inline const Q& vector<Q>::at(std::size_t index) const {
+		try {
+			if (out_of_array(index)) {
+				throw std::runtime_error("error(1): going beyond the array limit. return first element");
+			}
+			if (empty()) {
+				throw "error(2): container is empty. exit(1)";
+			}
+			return this->operator[](index);
+		}
+		catch (const std::exception& ex) {
+			std::cerr << "main(exception): " << ex.what() << ": ";
 			return *data_;
 		}
-		return data_[index];
+		catch (const char* msg) {
+			std::cerr << "main(exception): " << msg << std::endl;
+			std::exit(1);
+		}
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Functions with check Out of array at():
+	// Functions with check Out of array at():
 	template <typename Q>
 	inline Q& vector<Q>::at(std::size_t index) {
-		if (out_of_array(index)) {
-			std::cout << "Error! Out of array! Return [0] element!" << std::endl;
-			return data_[0];
-		}
-		return data_[index];
+		return const_cast<Q&>(static_cast<const vector<Q>&>(*this).at(index));
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Method push_back:
+	// Method push_back:
 	template <typename Q>
-	inline void vector<Q>::push_back(const Q value) {
+	inline void vector<Q>::push_back(const Q& value) {
 		if (!data_ || capacity_is_small()) {
 			capacity_ = (size_ + 1) * 2;
 			auto new_region = new Q[capacity_];
@@ -220,9 +253,9 @@ namespace mtd {
 		++size_;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Method push_front:
+	// Method push_front:
 	template <typename Q>
-	inline void vector<Q>::push_front(const Q value) {
+	inline void vector<Q>::push_front(const Q& value) {
 		if (capacity_is_small()) {
 			capacity_ = (size_ + 1) * 2;
 		}
@@ -233,9 +266,9 @@ namespace mtd {
 		data_ = new_region;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Method insert:
+	// Method insert:
 	template <typename Q>
-	inline void vector<Q>::insert(const std::size_t index, const Q value) {
+	inline void vector<Q>::insert(const std::size_t index, const Q& value) {
 		if (out_of_array(index)) {
 			std::cout << "Error! Out of array!" << std::endl;
 			return;
@@ -252,7 +285,7 @@ namespace mtd {
 		++size_;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Method erase:
+	// Method erase:
 	template <typename Q>
 	inline void vector<Q>::erase(const std::size_t index) {
 		if (out_of_array(index)) {
@@ -274,7 +307,7 @@ namespace mtd {
 		new_region = nullptr;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Method clear:
+	// Method clear:
 	template <typename Q>
 	inline void vector<Q>::clear() {
 		if (data_) {
@@ -285,19 +318,19 @@ namespace mtd {
 		capacity_ = 0;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Out of array:
+	// Out of array:
 	template <typename Q>
 	inline bool vector<Q>::out_of_array(std::size_t value) const {
-		return value > size_ ? true : false;
+		return value >= size_;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Checking capacity:
+	// Checking capacity:
 	template <typename Q>
 	inline bool vector<Q>::capacity_is_small() const {
 		return capacity_ <= size_ || !data_;
 	}
 	//-------------------------------------------------------------------------------------------------
-		// Swap Functions:
+	// Swap Functions:
 	template <typename Q>
 	inline void vector<Q>::swap(vector<Q>& rhs) noexcept {
 		std::swap(size_, rhs.size_);
