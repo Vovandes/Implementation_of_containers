@@ -479,23 +479,13 @@ namespace mtd {
 	// Functions at() with check index
 	template<typename Q>
 	inline const Q& deque<Q>::at(std::size_t index) const {
-		try {
-			if (if_index_large_size(index)) {
-				throw std::runtime_error("error(1): going beyond the array limit. return first element");
-			}
-			if (empty()) {
-				throw "error(2): container is empty. exit(1)";
-			}
-			return this->operator[](index);
+		if (if_index_large_size(index)) {
+			throw std::out_of_range("error(1): going beyond the array limit.");
 		}
-		catch (const std::exception& ex) {
-			std::cerr << "main(exception): " << ex.what() << ": ";
-			return head_->data;
+		if (empty()) {
+			throw std::out_of_range("error(2): container is empty.");
 		}
-		catch (const char* msg) {
-			std::cerr << "main(exception): " << msg << std::endl;
-			std::exit(1);
-		}
+		return this->operator[](index);
 	}
 	template <typename Q>
 	inline Q& deque<Q>::at(std::size_t index) {

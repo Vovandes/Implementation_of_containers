@@ -68,45 +68,50 @@ void FillRandomValuesContainer(Q& object) {
 //-------------------------------------------------------------------------------------------------
 template <typename Q>
 void ModulTest(const std::string_view& name_container, Q& object) {
-	std::cout << "//////////////////////////////////////////////////////////////////////////" << std::endl;
-	// Если контейнер пустой заполняем:
-	if (object.empty()) {
-		std::cout << "Container " << name_container << " is empty!" << std::endl;
-		std::cout << "Fill container " << name_container << std::endl;
-		//FillRandomValuesContainer(object);
-		for (auto i = 0; i < 10; ++i) {
-			object.push_back(i);
+	try {
+		std::cout << "//////////////////////////////////////////////////////////////////////////" << std::endl;
+		// Если контейнер пустой заполняем:
+		if (object.empty()) {
+			std::cout << "Container " << name_container << " is empty!" << std::endl;
+			std::cout << "Fill container " << name_container << std::endl;
+			//FillRandomValuesContainer(object);
+			for (auto i = 0; i < 10; ++i) {
+				object.push_back(i);
+			}
 		}
+		PrintContainers(name_container, object);
+
+		std::cout << std::endl << "Container size is " << object.size() << std::endl;
+
+		std::cout << std::endl << "Удаление третьего (по счёту), пятого и седьмого элементов method erase()" << std::endl;
+		object.erase(7);
+		object.erase(5);
+		object.erase(3);
+		PrintOneContainer(name_container, object);
+		std::cout << std::endl << "Container size is " << object.size() << std::endl;
+
+		std::cout << std::endl << "Добавление элемента 10 в начало контейнера method push_front()" << std::endl;
+		object.push_front(10);
+		PrintOneContainer(name_container, object);
+		std::cout << std::endl << "Container size is " << object.size() << std::endl;
+
+		std::cout << std::endl << "Добавление элемента 20 в середину контейнера method insert()" << std::endl;
+		object.insert(object.size() / 2, 20);
+		PrintOneContainer(name_container, object);
+		std::cout << std::endl << "Container size is " << object.size() << std::endl;
+
+		std::cout << std::endl << "Добавление элемента 30 в конец контейнера method push_back()" << std::endl;
+		object.push_back(30);
+		PrintOneContainer(name_container, object);
+		std::cout << std::endl << "Container size is " << object.size() << std::endl;
+
+		std::cout << std::endl << "method at()" << std::endl;
+		std::cout << object.at(object.size()) << std::endl;
+
+		std::cout << "//////////////////////////////////////////////////////////////////////////" << std::endl;
 	}
-	PrintContainers(name_container, object);
-
-	std::cout << std::endl << "Container size is " << object.size() << std::endl;
-
-	std::cout << std::endl << "Удаление третьего (по счёту), пятого и седьмого элементов method erase()" << std::endl;
-	object.erase(7);
-	object.erase(5);
-	object.erase(3);
-	PrintOneContainer(name_container, object);
-	std::cout << std::endl << "Container size is " << object.size() << std::endl;
-
-	std::cout << std::endl << "Добавление элемента 10 в начало контейнера method push_front()" << std::endl;
-	object.push_front(10);
-	PrintOneContainer(name_container, object);
-	std::cout << std::endl << "Container size is " << object.size() << std::endl;
-
-	std::cout << std::endl << "Добавление элемента 20 в середину контейнера method insert()" << std::endl;
-	object.insert(object.size() / 2, 20);
-	PrintOneContainer(name_container, object);
-	std::cout << std::endl << "Container size is " << object.size() << std::endl;
-
-	std::cout << std::endl << "Добавление элемента 30 в конец контейнера method push_back()" << std::endl;
-	object.push_back(30);
-	PrintOneContainer(name_container, object);
-	std::cout << std::endl << "Container size is " << object.size() << std::endl;
-
-	std::cout << std::endl << "method at()" << std::endl;
-	std::cout << object.at(object.size()) << std::endl;
-
-	std::cout << "//////////////////////////////////////////////////////////////////////////" << std::endl;
+	catch (const std::exception& ex) {
+		std::cerr << "main(exception): " << ex.what() << ": ";
+	}
 }
 //-------------------------------------------------------------------------------------------------

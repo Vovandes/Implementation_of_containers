@@ -211,23 +211,13 @@ namespace mtd {
 	// Functions with check Out of array at() for const objects:
 	template <typename Q>
 	inline const Q& vector<Q>::at(std::size_t index) const {
-		try {
-			if (out_of_array(index)) {
-				throw std::runtime_error("error(1): going beyond the array limit. return first element");
-			}
-			if (empty()) {
-				throw "error(2): container is empty. exit(1)";
-			}
-			return this->operator[](index);
+		if (out_of_array(index)) {
+			throw std::out_of_range("error(1): going beyond the array limit.");
 		}
-		catch (const std::exception& ex) {
-			std::cerr << "main(exception): " << ex.what() << ": ";
-			return *data_;
+		if (empty()) {
+			throw std::out_of_range("error(2): container is empty.");
 		}
-		catch (const char* msg) {
-			std::cerr << "main(exception): " << msg << std::endl;
-			std::exit(1);
-		}
+		return this->operator[](index);
 	}
 	//-------------------------------------------------------------------------------------------------
 	// Functions with check Out of array at():
